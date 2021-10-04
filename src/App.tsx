@@ -1,26 +1,35 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useState, ChangeEvent, FormEvent } from 'react'
+import { TaskItem } from './components/TaskItem'
+import { addTask } from './slices/taskSlice'
+import { useAppDispatch, useAppSelector } from './app/hook'
 
 function App() {
+  const tasks = useAppSelector((state) => state.tasks.tasks)
+  const count = useAppSelector((state) => state.tasks.count)
+  const dispatch = useAppDispatch()
+
+  const [inputTitle, setInputTitle] = useState('')
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setInputTitle(e.target.value)
+  }
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    dispatch(addTask(inputTitle))
+    setInputTitle('')
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <p>count: {count}</p>
+      <form onSubmit={handleSubmit}>
+        <input value={inputTitle} onChange={handleChange} type="text" />
+        <button type="submit">add</button>
+      </form>
+      {tasks.map((task) => (
+        <TaskItem task={task} />
+      ))}
+    </>
+  )
 }
 
-export default App;
+export default App
